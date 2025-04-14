@@ -1,11 +1,14 @@
 from pms5003 import PMS5003
 import mariadb
 import time
+from datetime import datetime
+datetime = datetime.now()
+now = datetime.strftime("%H:%M:%S")
 conn_params = {
-	"user":"root",
-	"password":"raspberry",
+	"user":"admin",
+	"password":"password",
 	"host":"localhost",
-	"database":"PMS5003readings"
+	"database":"mydatabase"
 }
 connection = mariadb.connect(**conn_params)
 cursor=connection.cursor()
@@ -25,11 +28,11 @@ Press Ctrl+C to exit!
 # Default, assume Raspberry Pi compatible, running Raspberry Pi OS Bookworm
 pms5003 = PMS5003(device="/dev/ttyAMA0", baudrate=9600)
 
-insert=("INSERT INTO pmsReadings (pm25, pm100) VALUES (%s, %s)")
+insert=("INSERT INTO main_pmsreadings (time, pm10, pm25, pm100) VALUES (%s, %s, %s, %s)")
 
 try:
     while True:
-        data = (pms5003.read().data[4] , pms5003.read().data[5])
+        data = (now ,pms5003.read().data[0],pms5003.read().data[1],pms5003.read().data[2])
         try:
             cursor.execute(insert, data)
             connection.commit()

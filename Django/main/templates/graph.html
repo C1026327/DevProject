@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PMS Sensor Data</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>PMS Sensor Data Over Time</h1>
+    <canvas id="sensorChart" width="400" height="200"></canvas>
+    
+    <script>
+        // Fetch the data from the Django view
+        fetch('/sensor-data/')
+            .then(response => response.json())
+            .then(data => {
+                const ctx = document.getElementById('sensorChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: data.labels,  // Time labels
+                        datasets: [{
+                            label: 'PMS Sensor Value',
+                            data: data.values,  // Sensor readings
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            fill: false
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            x: {
+                                type: 'time',
+                                time: {
+                                    unit: 'minute', // Can customize this depending on the data
+                                    tooltipFormat: 'll HH:mm'
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Timestamp'
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'PMS Value'
+                                }
+                            }
+                        }
+                    }
+                });
+            });
+    </script>
+</body>
+</html>
